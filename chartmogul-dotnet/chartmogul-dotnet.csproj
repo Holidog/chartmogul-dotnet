@@ -5,6 +5,7 @@
     <Version>1.0.1</Version>
     <Authors>facundofarias</Authors>
     <Company>Holidog</Company>
+    <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
