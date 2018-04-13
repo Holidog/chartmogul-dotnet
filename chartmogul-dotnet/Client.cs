@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using chartmoguldotnet.models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet
 {
     public class Client
     {

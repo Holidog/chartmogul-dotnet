@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet.models
 {
-    public class LineItem
+    public class LineItem : IChartMogulModel
     {
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace OConnors.ChartMogul
+﻿namespace chartmoguldotnet
 {
     public class ApiResponse
     {

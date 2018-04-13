@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet.models
 {
-    public class Customer
+    public class Customer : IChartMogulModel
     {
         [JsonProperty(PropertyName = "data_source_uuid")]
         public string DataSource { get; set; }

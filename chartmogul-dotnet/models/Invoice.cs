@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet.models
 {
-    public class Invoice
+    public class Invoice : IChartMogulModel
     {
         /// <summary>
         /// The ChartMogul UUID of the Customer that these invoices 

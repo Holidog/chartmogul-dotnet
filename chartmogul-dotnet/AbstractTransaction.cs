@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet
 {
     public abstract class AbstractTransaction
     {

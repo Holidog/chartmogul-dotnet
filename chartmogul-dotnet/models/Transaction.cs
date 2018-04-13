@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace OConnors.ChartMogul
+namespace chartmoguldotnet.models
 {
-    public class Transaction
+    public class Transaction : IChartMogulModel
     {
         public DateTime Date { get; set; }
         public string Type { get; set; }
