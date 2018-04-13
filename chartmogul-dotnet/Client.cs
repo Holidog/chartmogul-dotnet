@@ -17,33 +17,34 @@ namespace chartmoguldotnet
 
         public Client(Config config)
         {
-            var plainTextBytes = Encoding.UTF8.GetBytes(config.AccountToken + ":" + config.SecretKey);
+            var plainTextBytes = Encoding.UTF8.GetBytes($"{config.AccountToken}:{config.SecretKey}");
             _credentials = Convert.ToBase64String(plainTextBytes);
         }
 
-        public Client(string accountToken, string secretKey) : this (new Config { AccountToken = accountToken, SecretKey = secretKey })
-        {
-            
-        }
+        public Client(string accountToken, string secretKey) : this (new Config { AccountToken = accountToken, SecretKey = secretKey }) {}
 
         public List<DataSource> GetDataSources()
         {
             string urlPath = "import/data_sources";
             ApiResponse resp = CallApi(urlPath, "GET");
+            var list = new List<DataSource>();
             if (resp.Success)
             {
                 JToken root = JObject.Parse(resp.Json);
                 JToken sources = root["data_sources"];
                 IEnumerable<DataSource> dataSources = JsonConvert.DeserializeObject<IEnumerable<DataSource>>(sources.ToString());
-                return dataSources.ToList();
+                list = dataSources.ToList();
             }
-            else
-                return null;
+            return list;
         }
 
-        public string AddDataSource(DataSource dataSource)
+        public bool AddDataSource(DataSource dataSource)
         {
-            throw new NotImplementedException();
+            string urlPath = "data_sources";
+            string json = JsonConvert.SerializeObject(dataSource);
+
+            ApiResponse resp = CallApi(urlPath, "POST", json);
+            return resp.Success;
         }
 
         public string DeleteDataSource()
@@ -55,13 +56,14 @@ namespace chartmoguldotnet
         {
             string urlPath = "import/customers";
             ApiResponse resp = CallApi(urlPath, "GET");
+            var list = new List<Customer>();
             if (resp.Success)
             {
                 IEnumerable<Customer> customers = JsonConvert.DeserializeObject<IEnumerable<Customer>>(resp.Json);
-                return customers.ToList();
+                list = customers.ToList();
             }
-            else
-                return null;
+
+            return list;
         }
 
         public bool AddCustomer(Customer cust, DataSource ds)
@@ -74,10 +76,7 @@ namespace chartmoguldotnet
             string json = JsonConvert.SerializeObject(cust);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            if (resp.Success)
-                return true;
-            else
-                return false;
+            return resp.Success;
         }
 
         public void DeleteCustomer(Customer cust)
@@ -89,13 +88,14 @@ namespace chartmoguldotnet
         {
             string urlPath = "import/plans";
             ApiResponse resp = CallApi(urlPath, "GET");
+            var list = new List<Plan>();
             if (resp.Success)
             {
                 IEnumerable<Plan> plans = JsonConvert.DeserializeObject<IEnumerable<Plan>>(resp.Json);
-                return plans.ToList();
+                list = plans.ToList();
             }
-            else
-                return null;
+
+            return list;
         }
 
         public bool AddPlan(Plan plan, DataSource ds)
@@ -105,10 +105,7 @@ namespace chartmoguldotnet
             string json = JsonConvert.SerializeObject(plan);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            if (resp.Success)
-                return true;
-            else
-                return false;
+            return resp.Success;
         }
 
         public List<Invoice> GetInvoices()
@@ -118,40 +115,35 @@ namespace chartmoguldotnet
 
         public bool AddInvoice(List<Invoice> invoices, Customer customer)
         {
-            string urlPath = "import/customers/" + customer.Uuid + "/invoices";
+            string urlPath = $"import/customers/{customer.Uuid}/invoices";
             string json = JsonConvert.SerializeObject(invoices);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            if (resp.Success)
-                return true;
-            else
-                return false;
+            return resp.Success;
         }
 
         public List<Subscription> GetSubscriptions(Customer cust)
         {
-            string urlPath = "import/customers/" + cust.Uuid + "/subscriptions";
+            string urlPath = $"import/customers/{cust.Uuid}/subscriptions";
             ApiResponse resp = CallApi(urlPath, "GET");
+            var list = new List<Subscription>();
             if (resp.Success)
             {
                 IEnumerable<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(resp.Json);
-                return subscriptions.ToList();
+                list = subscriptions.ToList();
             }
-            else
-                return null;
+
+            return list;
         }
 
         public bool CancelSubscription(Subscription sub, DateTime cancelledAt)
         {
-            string urlPath = "import/subscriptions/" + sub.Uuid;
+            string urlPath = $"import/subscriptions/{sub.Uuid}";
             sub.CancellationDates = cancelledAt;
             string json = JsonConvert.SerializeObject(sub);
 
             ApiResponse resp = CallApi(urlPath, "PATCH", json);
-            if (resp.Success)
-                return true;
-            else
-                return false;
+            return resp.Success;
         }
 
         private ApiResponse CallApi(string urlPath, string httpMethod, string jsonToWrite = "")
