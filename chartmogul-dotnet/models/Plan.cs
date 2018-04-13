@@ -2,7 +2,7 @@
 
 namespace chartmoguldotnet.models
 {
-    public class Plan : IChartMogulModel
+    public class Plan
     {
         [JsonIgnore]
         public string Uuid { get; set; }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace chartmoguldotnet.models
 {
-    public class Invoice : IChartMogulModel
+    public class Invoice
     {
         /// <summary>
         /// The ChartMogul UUID of the Customer that these invoices 

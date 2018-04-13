@@ -2,7 +2,7 @@
 
 namespace chartmoguldotnet.models
 {
-    public class Customer : IChartMogulModel
+    public class Customer
     {
         [JsonProperty(PropertyName = "data_source_uuid")]
         public string DataSource { get; set; }

@@ -25,7 +25,7 @@ namespace chartmoguldotnet
 
         public List<DataSource> GetDataSources()
         {
-            string urlPath = "import/data_sources";
+            string urlPath = $"import/data_sources";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<DataSource>();
             if (resp.Success)
@@ -40,7 +40,7 @@ namespace chartmoguldotnet
 
         public bool AddDataSource(DataSource dataSource)
         {
-            string urlPath = "data_sources";
+            string urlPath = $"data_sources";
             string json = JsonConvert.SerializeObject(dataSource);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
@@ -54,7 +54,7 @@ namespace chartmoguldotnet
 
         public List<Customer> GetCustomers()
         {
-            string urlPath = "import/customers";
+            string urlPath = $"import/customers";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Customer>();
             if (resp.Success)
@@ -71,7 +71,7 @@ namespace chartmoguldotnet
             if (cust == null)
                 return false;
 
-            string urlPath = "import/customers";
+            string urlPath = $"import/customers";
             cust.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(cust);
 
@@ -86,7 +86,7 @@ namespace chartmoguldotnet
 
         public List<Plan> GetPlans()
         {
-            string urlPath = "import/plans";
+            string urlPath = $"import/plans";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Plan>();
             if (resp.Success)
@@ -100,7 +100,7 @@ namespace chartmoguldotnet
 
         public bool AddPlan(Plan plan, DataSource ds)
         {
-            string urlPath = "import/plans";
+            string urlPath = $"import/plans";
             plan.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(plan);
 
@@ -108,9 +108,26 @@ namespace chartmoguldotnet
             return resp.Success;
         }
 
-        public List<Invoice> GetInvoices()
+        public List<Invoice> GetInvoices(bool includeAll = false)
         {
-            throw new NotImplementedException();
+            string urlPath = $"invoices";
+            ApiResponse resp = CallApi(urlPath, "GET");
+            var list = new List<Invoice>();
+            if (resp.Success)
+            {
+                var invoices = JsonConvert.DeserializeObject<InvoiceCollection>(resp.Json);
+                list.Concat(invoices.Invoices);
+
+                if(includeAll) {
+                    for (int i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
+                    {
+                        var invoicesPage = CallApiPageable<InvoiceCollection>(urlPath, i);
+                        list.Concat(invoicesPage.Invoices);
+                    }
+                }
+            }
+
+            return list;
         }
 
         public bool AddInvoice(List<Invoice> invoices, Customer customer)
@@ -146,7 +163,13 @@ namespace chartmoguldotnet
             return resp.Success;
         }
 
-        private ApiResponse CallApi(string urlPath, string httpMethod, string jsonToWrite = "")
+        private O CallApiPageable<O>(string urlPath, int page = 1)
+        {
+            ApiResponse resp = CallApi(urlPath, "GET", string.Empty, $"?page={page}");
+            return JsonConvert.DeserializeObject<O>(resp.Json);
+        }
+
+        private ApiResponse CallApi(string urlPath, string httpMethod, string jsonToWrite = "", string queryString = "")
         {
             try
             {
@@ -182,7 +205,7 @@ namespace chartmoguldotnet
             }
             catch (Exception ex)
             {
-                return new ApiResponse { Success = false, Message = "Could not add customer: " + ex.Message };
+                return new ApiResponse { Success = false, Message = $"ApiCall could not be done: {ex.Message}." };
             }
         }
     }  

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace chartmoguldotnet.models
 {
-    public class LineItem : IChartMogulModel
+    public class LineItem
     {
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }

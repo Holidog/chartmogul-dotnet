@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace chartmoguldotnet.models
 {
-    public class DataSource : IChartMogulModel
+    public class DataSource
     {
         [JsonProperty(PropertyName = "uuid")]
         public string Uuid { get; set; }

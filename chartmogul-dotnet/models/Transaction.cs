@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace chartmoguldotnet.models
 {
-    public class Transaction : IChartMogulModel
+    public class Transaction
     {
         public DateTime Date { get; set; }
         public string Type { get; set; }
