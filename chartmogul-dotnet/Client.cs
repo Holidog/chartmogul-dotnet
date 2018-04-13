@@ -20,6 +20,11 @@ namespace OConnors.ChartMogul
             _credentials = Convert.ToBase64String(plainTextBytes);
         }
 
+        public Client(string accountToken, string secretKey) : this (new Config { AccountToken = accountToken, SecretKey = secretKey })
+        {
+            
+        }
+
         public List<DataSource> GetDataSources()
         {
             string urlPath = "import/data_sources";
