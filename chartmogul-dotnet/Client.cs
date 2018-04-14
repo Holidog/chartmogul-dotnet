@@ -32,7 +32,7 @@ namespace chartmoguldotnet
             {
                 JToken root = JObject.Parse(resp.Json);
                 JToken sources = root["data_sources"];
-                IEnumerable<DataSource> dataSources = JsonConvert.DeserializeObject<IEnumerable<DataSource>>(sources.ToString());
+                var dataSources = JsonConvert.DeserializeObject<IEnumerable<DataSource>>(sources.ToString());
                 list = dataSources.ToList();
             }
             return list;
@@ -59,7 +59,7 @@ namespace chartmoguldotnet
             var list = new List<Customer>();
             if (resp.Success)
             {
-                IEnumerable<Customer> customers = JsonConvert.DeserializeObject<IEnumerable<Customer>>(resp.Json);
+                var customers = JsonConvert.DeserializeObject<IEnumerable<Customer>>(resp.Json);
                 list = customers.ToList();
             }
 
@@ -91,7 +91,7 @@ namespace chartmoguldotnet
             var list = new List<Plan>();
             if (resp.Success)
             {
-                IEnumerable<Plan> plans = JsonConvert.DeserializeObject<IEnumerable<Plan>>(resp.Json);
+                var plans = JsonConvert.DeserializeObject<IEnumerable<Plan>>(resp.Json);
                 list = plans.ToList();
             }
 
@@ -116,13 +116,13 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var invoices = JsonConvert.DeserializeObject<InvoiceCollection>(resp.Json);
-                list.Concat(invoices.Invoices);
+                list = list.Concat(invoices.Invoices).ToList();
 
                 if(includeAll) {
-                    for (int i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
+                    for (var i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
                     {
                         var invoicesPage = CallApiPageable<InvoiceCollection>(urlPath, i);
-                        list.Concat(invoicesPage.Invoices);
+                        list = list.Concat(invoicesPage.Invoices).ToList();
                     }
                 }
             }
@@ -146,7 +146,7 @@ namespace chartmoguldotnet
             var list = new List<Subscription>();
             if (resp.Success)
             {
-                IEnumerable<Subscription> subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(resp.Json);
+                var subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(resp.Json);
                 list = subscriptions.ToList();
             }
 
@@ -163,17 +163,17 @@ namespace chartmoguldotnet
             return resp.Success;
         }
 
-        private O CallApiPageable<O>(string urlPath, int page = 1)
+        private TO CallApiPageable<TO>(string urlPath, int page = 1)
         {
             ApiResponse resp = CallApi(urlPath, "GET", string.Empty, $"?page={page}");
-            return JsonConvert.DeserializeObject<O>(resp.Json);
+            return JsonConvert.DeserializeObject<TO>(resp.Json);
         }
 
         private ApiResponse CallApi(string urlPath, string httpMethod, string jsonToWrite = "", string queryString = "")
         {
             try
             {
-                HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(_baseUrl + urlPath);
+                HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create($"{_baseUrl}{urlPath}{queryString}");
                 httpRequest.Headers.Add("Authorization", "Basic " + _credentials);
                 httpRequest.Accept = "*/*";
                 httpRequest.Method = httpMethod.ToUpper();
