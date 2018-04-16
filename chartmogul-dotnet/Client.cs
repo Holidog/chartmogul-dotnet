@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using chartmoguldotnet.Exceptions;
 using chartmoguldotnet.models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -38,13 +39,18 @@ namespace chartmoguldotnet
             return list;
         }
 
-        public bool AddDataSource(DataSource dataSource)
+        public DataSource AddDataSource(DataSource dataSource)
         {
             string urlPath = $"data_sources";
             string json = JsonConvert.SerializeObject(dataSource);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            return resp.Success;
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<DataSource>(resp.Json);
+            }
+
+            throw new ChartMogulException($"DataSource cannot be created: {resp.Message}");
         }
 
         public string DeleteDataSource()
@@ -66,17 +72,19 @@ namespace chartmoguldotnet
             return list;
         }
 
-        public bool AddCustomer(Customer cust, DataSource ds)
+        public Customer AddCustomer(Customer cust, DataSource ds)
         {
-            if (cust == null)
-                return false;
-
             string urlPath = $"import/customers";
             cust.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(cust);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            return resp.Success;
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<Customer>(resp.Json);
+            }
+
+            throw new ChartMogulException($"Customer cannot be created: {resp.Message}");
         }
 
         public void DeleteCustomer(Customer cust)
@@ -98,14 +106,24 @@ namespace chartmoguldotnet
             return list;
         }
 
-        public bool AddPlan(Plan plan, DataSource ds)
+        public Plan AddPlan(Plan plan, DataSource ds)
         {
             string urlPath = $"import/plans";
             plan.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(plan);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            return resp.Success;
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<Plan>(resp.Json);
+            }
+
+            throw new ChartMogulException($"Plan cannot be created: {resp.Message}");
+        }
+        
+        public void DeletePlan(Plan plan)
+        {
+            throw new NotImplementedException();
         }
 
         public List<Invoice> GetInvoices(bool includeAll = false)
@@ -130,13 +148,37 @@ namespace chartmoguldotnet
             return list;
         }
 
-        public bool AddInvoice(List<Invoice> invoices, Customer customer)
+        public Invoice AddInvoice(List<Invoice> invoices, Customer customer)
         {
             string urlPath = $"import/customers/{customer.Uuid}/invoices";
             string json = JsonConvert.SerializeObject(invoices);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
-            return resp.Success;
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<Invoice>(resp.Json);
+            }
+
+            throw new ChartMogulException($"Invoice cannot be created: {resp.Message}");
+        }
+        
+        public void DeleteInvoice(Invoice invoice)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Transaction AddTransaction(Invoice invoice, Transaction transaction)
+        {
+            string urlPath = $"import/invoices/{invoice.Uuid}/transactions";
+            string json = JsonConvert.SerializeObject(transaction);
+
+            ApiResponse resp = CallApi(urlPath, "POST", json);
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<Transaction>(resp.Json);
+            }
+
+            throw new ChartMogulException($"Transaction cannot be created: {resp.Message}");
         }
 
         public List<Subscription> GetSubscriptions(Customer cust)
