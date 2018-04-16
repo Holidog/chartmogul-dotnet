@@ -58,15 +58,23 @@ namespace chartmoguldotnet
             throw new NotImplementedException();
         }
 
-        public List<Customer> GetCustomers()
+        public List<Customer> GetCustomers(bool includeAll = false)
         {
             string urlPath = $"import/customers";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Customer>();
             if (resp.Success)
             {
-                var customers = JsonConvert.DeserializeObject<IEnumerable<Customer>>(resp.Json);
-                list = customers.ToList();
+                var customers = JsonConvert.DeserializeObject<CustomerCollection>(resp.Json);
+                list = list.Concat(customers.Customers).ToList();
+
+                if(includeAll) {
+                    for (var i = customers.CurrentPage + 1; i < customers.TotalPages; i++)
+                    {
+                        var customersPage = CallApiPageable<CustomerCollection>(urlPath, i);
+                        list = list.Concat(customersPage.Customers).ToList();
+                    }
+                }
             }
 
             return list;
@@ -92,15 +100,23 @@ namespace chartmoguldotnet
             throw new NotImplementedException();
         }
 
-        public List<Plan> GetPlans()
+        public List<Plan> GetPlans(bool includeAll = true)
         {
             string urlPath = $"import/plans";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Plan>();
             if (resp.Success)
             {
-                var plans = JsonConvert.DeserializeObject<IEnumerable<Plan>>(resp.Json);
-                list = plans.ToList();
+                var plans = JsonConvert.DeserializeObject<PlanCollection>(resp.Json);
+                list = list.Concat(plans.Plans).ToList();
+
+                if(includeAll) {
+                    for (var i = plans.CurrentPage + 1; i < plans.TotalPages; i++)
+                    {
+                        var plansPage = CallApiPageable<PlanCollection>(urlPath, i);
+                        list = list.Concat(plansPage.Plans).ToList();
+                    }
+                }
             }
 
             return list;
@@ -208,7 +224,12 @@ namespace chartmoguldotnet
         private TO CallApiPageable<TO>(string urlPath, int page = 1)
         {
             ApiResponse resp = CallApi(urlPath, "GET", string.Empty, $"?page={page}");
-            return JsonConvert.DeserializeObject<TO>(resp.Json);
+            if (resp.Success)
+            {
+                return JsonConvert.DeserializeObject<TO>(resp.Json);
+            }
+            
+            throw new ChartMogulException($"Pageable API couldn't be retrieved: {resp.Message}");
         }
 
         private ApiResponse CallApi(string urlPath, string httpMethod, string jsonToWrite = "", string queryString = "")
