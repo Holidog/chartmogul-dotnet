@@ -4,7 +4,7 @@ namespace chartmoguldotnet.models
 {
     public class Plan
     {
-        [JsonIgnore]
+        [JsonProperty(PropertyName = "uuid")]
         public string Uuid { get; set; }
 
         [JsonProperty(PropertyName = "data_source_uuid")]

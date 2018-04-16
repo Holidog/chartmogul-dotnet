@@ -31,7 +31,7 @@ namespace chartmoguldotnet.models
         [JsonProperty(PropertyName = "zip")]
         public string Zip { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty(PropertyName = "uuid")]
         public string Uuid { get; set; }
     }
 }
