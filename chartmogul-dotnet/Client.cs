@@ -26,7 +26,7 @@ namespace chartmoguldotnet
 
         public List<DataSource> GetDataSources()
         {
-            string urlPath = $"import/data_sources";
+            string urlPath = $"data_sources";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<DataSource>();
             if (resp.Success)
@@ -60,7 +60,7 @@ namespace chartmoguldotnet
 
         public List<Customer> GetCustomers(bool includeAll = false)
         {
-            string urlPath = $"import/customers";
+            string urlPath = $"customers";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Customer>();
             if (resp.Success)
@@ -82,7 +82,7 @@ namespace chartmoguldotnet
 
         public Customer AddCustomer(Customer cust, DataSource ds)
         {
-            string urlPath = $"import/customers";
+            string urlPath = $"customers";
             cust.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(cust);
 
@@ -102,7 +102,7 @@ namespace chartmoguldotnet
 
         public List<Plan> GetPlans(bool includeAll = true)
         {
-            string urlPath = $"import/plans";
+            string urlPath = $"plans";
             ApiResponse resp = CallApi(urlPath, "GET");
             var list = new List<Plan>();
             if (resp.Success)
@@ -124,7 +124,7 @@ namespace chartmoguldotnet
 
         public Plan AddPlan(Plan plan, DataSource ds)
         {
-            string urlPath = $"import/plans";
+            string urlPath = $"plans";
             plan.DataSource = ds.Uuid;
             string json = JsonConvert.SerializeObject(plan);
 
