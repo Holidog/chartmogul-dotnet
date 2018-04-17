@@ -5,7 +5,7 @@ namespace chartmoguldotnet.models
 {
     public class CustomerCollection
     {
-        [JsonProperty(PropertyName = "customers")]
+        [JsonProperty(PropertyName = "entries")]
         public List<Customer> Customers { get; set; }
 
         [JsonProperty(PropertyName = "current_page")]

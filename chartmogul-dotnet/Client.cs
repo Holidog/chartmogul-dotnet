@@ -66,13 +66,12 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var customers = JsonConvert.DeserializeObject<CustomerCollection>(resp.Json);
-                list = list.Concat(customers.Customers).ToList();
-
+                list.AddRange(customers.Customers);
                 if(includeAll) {
                     for (var i = customers.CurrentPage + 1; i < customers.TotalPages; i++)
                     {
                         var customersPage = CallApiPageable<CustomerCollection>(urlPath, i);
-                        list = list.Concat(customersPage.Customers).ToList();
+                        list.AddRange(customersPage.Customers);
                     }
                 }
             }
@@ -108,13 +107,13 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var plans = JsonConvert.DeserializeObject<PlanCollection>(resp.Json);
-                list = list.Concat(plans.Plans).ToList();
+                list.AddRange(plans.Plans);
 
                 if(includeAll) {
                     for (var i = plans.CurrentPage + 1; i < plans.TotalPages; i++)
                     {
                         var plansPage = CallApiPageable<PlanCollection>(urlPath, i);
-                        list = list.Concat(plansPage.Plans).ToList();
+                        list.AddRange(plansPage.Plans);
                     }
                 }
             }
@@ -150,13 +149,13 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var invoices = JsonConvert.DeserializeObject<InvoiceCollection>(resp.Json);
-                list = list.Concat(invoices.Invoices).ToList();
+                list.AddRange(invoices.Invoices);
 
                 if(includeAll) {
                     for (var i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
                     {
                         var invoicesPage = CallApiPageable<InvoiceCollection>(urlPath, i);
-                        list = list.Concat(invoicesPage.Invoices).ToList();
+                        list.AddRange(invoicesPage.Invoices);
                     }
                 }
             }
