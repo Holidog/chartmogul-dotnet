@@ -18,5 +18,10 @@ namespace chartmoguldotnet.models
         {
             return CurrentPage < TotalPages;
         }
+        
+        public bool IsEmpty()
+        {
+            return Plans.Count == 0;
+        }
     }
 }

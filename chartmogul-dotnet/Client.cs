@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,19 +8,28 @@ using System.Text;
 using chartmoguldotnet.Exceptions;
 using chartmoguldotnet.models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace chartmoguldotnet
 {
     public class Client
     {
-        private readonly string _baseUrl = "https://api.chartmogul.com/v1/";
+        private const string BaseUrl = "https://api.chartmogul.com/v1/";
+        
         private readonly string _credentials;
+        private readonly JsonSerializerSettings _settings;
 
         public Client(Config config)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes($"{config.AccountToken}:{config.SecretKey}");
             _credentials = Convert.ToBase64String(plainTextBytes);
+            _settings = new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore };
+            _settings.Converters.Add(new IsoDateTimeConverter
+            {
+                DateTimeStyles = DateTimeStyles.AdjustToUniversal,
+                DateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss"
+            });
         }
 
         public Client(string accountToken, string secretKey) : this (new Config { AccountToken = accountToken, SecretKey = secretKey }) {}
@@ -34,7 +44,7 @@ namespace chartmoguldotnet
                 JToken root = JObject.Parse(resp.Json);
                 JToken sources = root["data_sources"];
                 var dataSources = JsonConvert.DeserializeObject<IEnumerable<DataSource>>(sources.ToString());
-                list = dataSources.ToList();
+                list.AddRange(dataSources.ToList());
             }
             return list;
         }
@@ -42,7 +52,7 @@ namespace chartmoguldotnet
         public DataSource AddDataSource(DataSource dataSource)
         {
             string urlPath = $"data_sources";
-            string json = JsonConvert.SerializeObject(dataSource);
+            string json = JsonConvert.SerializeObject(dataSource, _settings);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
             if (resp.Success)
@@ -66,7 +76,11 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var customers = JsonConvert.DeserializeObject<CustomerCollection>(resp.Json);
-                list.AddRange(customers.Customers);
+                if (!customers.IsEmpty())
+                {
+                    list.AddRange(customers.Customers);
+                }
+                
                 if(includeAll) {
                     for (var i = customers.CurrentPage + 1; i < customers.TotalPages; i++)
                     {
@@ -83,7 +97,7 @@ namespace chartmoguldotnet
         {
             string urlPath = $"customers";
             cust.DataSource = ds.Uuid;
-            string json = JsonConvert.SerializeObject(cust);
+            string json = JsonConvert.SerializeObject(cust, _settings);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
             if (resp.Success)
@@ -107,7 +121,10 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var plans = JsonConvert.DeserializeObject<PlanCollection>(resp.Json);
-                list.AddRange(plans.Plans);
+                if (!plans.IsEmpty())
+                {
+                    list.AddRange(plans.Plans);
+                }
 
                 if(includeAll) {
                     for (var i = plans.CurrentPage + 1; i < plans.TotalPages; i++)
@@ -125,7 +142,7 @@ namespace chartmoguldotnet
         {
             string urlPath = $"plans";
             plan.DataSource = ds.Uuid;
-            string json = JsonConvert.SerializeObject(plan);
+            string json = JsonConvert.SerializeObject(plan, _settings);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
             if (resp.Success)
@@ -149,7 +166,10 @@ namespace chartmoguldotnet
             if (resp.Success)
             {
                 var invoices = JsonConvert.DeserializeObject<InvoiceCollection>(resp.Json);
-                list.AddRange(invoices.Invoices);
+                if (!invoices.IsEmpty())
+                {
+                    list.AddRange(invoices.Invoices);
+                }
 
                 if(includeAll) {
                     for (var i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
@@ -163,10 +183,10 @@ namespace chartmoguldotnet
             return list;
         }
 
-        public Invoice AddInvoice(List<Invoice> invoices, Customer customer)
+        public Invoice AddInvoices(List<Invoice> invoices, Customer customer)
         {
             string urlPath = $"import/customers/{customer.Uuid}/invoices";
-            string json = JsonConvert.SerializeObject(invoices);
+            string json = JsonConvert.SerializeObject(new { invoices = invoices}, _settings);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
             if (resp.Success)
@@ -185,7 +205,7 @@ namespace chartmoguldotnet
         public Transaction AddTransaction(Invoice invoice, Transaction transaction)
         {
             string urlPath = $"import/invoices/{invoice.Uuid}/transactions";
-            string json = JsonConvert.SerializeObject(transaction);
+            string json = JsonConvert.SerializeObject(transaction, _settings);
 
             ApiResponse resp = CallApi(urlPath, "POST", json);
             if (resp.Success)
@@ -214,7 +234,7 @@ namespace chartmoguldotnet
         {
             string urlPath = $"import/subscriptions/{sub.Uuid}";
             sub.CancellationDates = cancelledAt;
-            string json = JsonConvert.SerializeObject(sub);
+            string json = JsonConvert.SerializeObject(sub, _settings);
 
             ApiResponse resp = CallApi(urlPath, "PATCH", json);
             return resp.Success;
@@ -235,7 +255,7 @@ namespace chartmoguldotnet
         {
             try
             {
-                HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create($"{_baseUrl}{urlPath}{queryString}");
+                HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create($"{BaseUrl}{urlPath}{queryString}");
                 httpRequest.Headers.Add("Authorization", "Basic " + _credentials);
                 httpRequest.Accept = "*/*";
                 httpRequest.Method = httpMethod.ToUpper();

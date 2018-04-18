@@ -16,5 +16,8 @@ namespace chartmoguldotnet.models
 
         [JsonProperty(PropertyName = "status")]
         public string Status { get; set; }
+        
+        [JsonProperty(PropertyName = "system")]
+        public string System { get; set; }
     }
 }
