@@ -82,9 +82,10 @@ namespace chartmoguldotnet
                 }
                 
                 if(includeAll) {
-                    for (var i = customers.CurrentPage + 1; i < customers.TotalPages; i++)
+                    for (var i = customers.CurrentPage; i < customers.TotalPages; i++)
                     {
-                        var customersPage = CallApiPageable<CustomerCollection>(urlPath, i);
+                        var nextPage = i + 1;
+                        var customersPage = CallApiPageable<CustomerCollection>(urlPath, nextPage);
                         list.AddRange(customersPage.Customers);
                     }
                 }
@@ -127,9 +128,10 @@ namespace chartmoguldotnet
                 }
 
                 if(includeAll) {
-                    for (var i = plans.CurrentPage + 1; i < plans.TotalPages; i++)
+                    for (var i = plans.CurrentPage; i < plans.TotalPages; i++)
                     {
-                        var plansPage = CallApiPageable<PlanCollection>(urlPath, i);
+                        var nextPage = i + 1;
+                        var plansPage = CallApiPageable<PlanCollection>(urlPath, nextPage);
                         list.AddRange(plansPage.Plans);
                     }
                 }
@@ -171,10 +173,12 @@ namespace chartmoguldotnet
                     list.AddRange(invoices.Invoices);
                 }
 
-                if(includeAll) {
-                    for (var i = invoices.CurrentPage + 1; i < invoices.TotalPages; i++)
+                if(includeAll)
+                {
+                    for (var i = invoices.CurrentPage; i < invoices.TotalPages; i++)
                     {
-                        var invoicesPage = CallApiPageable<InvoiceCollection>(urlPath, i);
+                        var nextPage = i + 1;
+                        var invoicesPage = CallApiPageable<InvoiceCollection>(urlPath, nextPage);
                         list.AddRange(invoicesPage.Invoices);
                     }
                 }
