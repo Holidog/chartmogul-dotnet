@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>chartmogul-dotnet</PackageId>
-    <Version>1.0.9</Version>
+    <Version>1.0.15</Version>
     <Authors>facundofarias</Authors>
     <Company>Holidog</Company>
     <IsPackable>true</IsPackable>
