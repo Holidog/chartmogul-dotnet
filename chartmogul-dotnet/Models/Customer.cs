@@ -36,9 +36,9 @@ namespace chartmoguldotnet.models
         public string Uuid { get; set; }
         
         [JsonProperty(PropertyName = "lead_created_at")]
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         
         [JsonProperty(PropertyName = "free_trial_started_at")]
-        public DateTime FreeTrialDate { get; set; }
+        public DateTime? FreeTrialDate { get; set; }
     }
 }
