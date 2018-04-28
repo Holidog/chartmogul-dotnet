@@ -25,7 +25,7 @@ namespace chartmoguldotnet.models
         public int Amount { get; set; }
 
         [JsonProperty(PropertyName = "cancelled_at")]
-        public DateTime? CancellationDate { get; set; }
+        public DateTime CancellationDate { get; set; }
 
         [JsonProperty(PropertyName = "prorated")]
         public bool ProRated { get; set; }

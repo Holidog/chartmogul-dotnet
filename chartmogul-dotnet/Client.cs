@@ -227,8 +227,11 @@ namespace chartmoguldotnet
             var list = new List<Subscription>();
             if (resp.Success)
             {
-                var subscriptions = JsonConvert.DeserializeObject<IEnumerable<Subscription>>(resp.Json);
-                list = subscriptions.ToList();
+                var subscriptions = JsonConvert.DeserializeObject<SubscriptionCollection>(resp.Json);
+                if (!subscriptions.IsEmpty())
+                {
+                    list.AddRange(subscriptions.Subscriptions);
+                }
             }
 
             return list;
