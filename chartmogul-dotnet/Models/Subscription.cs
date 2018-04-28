@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace chartmoguldotnet.models
@@ -21,6 +22,6 @@ namespace chartmoguldotnet.models
         public string DataSource { get; set; }
 
         [JsonProperty(PropertyName = "cancellation_dates")]
-        public DateTime CancellationDates { get; set; }
+        public List<DateTime> CancellationDates { get; set; }
     }
 }

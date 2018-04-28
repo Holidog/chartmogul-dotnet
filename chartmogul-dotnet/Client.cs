@@ -240,7 +240,7 @@ namespace chartmoguldotnet
         public bool CancelSubscription(Subscription sub, DateTime cancelledAt)
         {
             string urlPath = $"import/subscriptions/{sub.Uuid}";
-            sub.CancellationDates = cancelledAt;
+            sub.CancellationDates.Add(cancelledAt);
             string json = JsonConvert.SerializeObject(sub, _settings);
 
             ApiResponse resp = CallApi(urlPath, "PATCH", json);
