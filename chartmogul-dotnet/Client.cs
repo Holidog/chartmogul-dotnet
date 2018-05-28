@@ -271,6 +271,9 @@ namespace chartmoguldotnet
                 {
                     httpRequest.ContentType = "application/json";
                 }
+                
+                // Solves a security error when running on Windows
+                httpRequest.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
 
                 // Only write the json file when it is a add call or a update call
                 if (!string.IsNullOrEmpty(jsonToWrite))
